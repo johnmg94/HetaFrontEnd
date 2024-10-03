@@ -1,0 +1,23 @@
+<!-- templates/graph_select.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Data for Graph</title>
+</head>
+<body>
+    <h1>Select Data to Graph</h1>
+    <form method="post">
+        <label for="table_name">Data Series:</label>
+        <select name="table_name">
+            {% for table in tables %}
+            <option value="{{ table }}">{{ table.upper() }}</option>
+            {% endfor %}
+        </select><br><br>
+        <label for="col_names">Tables in Graph</label>
+        <select
+        <input type="submit" value="Generate Graph">
+    </form>
+    <br><a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

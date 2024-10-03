@@ -1,0 +1,77 @@
+<!-- templates/model.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Specify Model</title>
+</head>
+<body>
+    <h1>Specify Regression Model</h1>
+    <form method="post">
+        <label for="table_name">Select Data Series:</label>
+        <select name="table_name" id="table_select">
+            {% for table in tables %}
+            <option value="{{ table }}">{{ table.upper() }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="dependent_var">Dependent Variable:</label>
+        <select name="dependent_var" id="dependent_var">
+            <!-- Options will be populated by JavaScript -->
+        </select><br><br>
+
+        <label for="independent_vars">Independent Variables:</label><br>
+        <div id="independent_vars">
+            <!-- Options will be populated by JavaScript -->
+        </div>
+        <br>
+
+        <label for="model_name">Model Name:</label>
+        <input type="text" name="model_name" required><br><br>
+        <input type="submit" value="Run Regression">
+    </form>
+
+    {% if summary %}
+        <h2>Regression Summary:</h2>
+        {{ summary|safe }}
+    {% endif %}
+
+    <br><a href="{{ url_for('home') }}">Back to Home</a>
+
+    <script>
+        const columns = {{ columns | tojson }};
+        const tableSelect = document.getElementById('table_select');
+        const dependentVarSelect = document.getElementById('dependent_var');
+        const independentVarsDiv = document.getElementById('independent_vars');
+
+        function updateVariables() {
+            const selectedTable = tableSelect.value;
+            const vars = columns[selectedTable];
+
+            // Update dependent variable select
+            dependentVarSelect.innerHTML = '';
+            vars.forEach(function(v) {
+                const option = document.createElement('option');
+                option.value = v;
+                option.text = v;
+                dependentVarSelect.appendChild(option);
+            });
+
+            // Update independent variables checkboxes
+            independentVarsDiv.innerHTML = '';
+            vars.forEach(function(v) {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'independent_vars';
+                checkbox.value = v;
+                independentVarsDiv.appendChild(checkbox);
+                independentVarsDiv.appendChild(document.createTextNode(v));
+                independentVarsDiv.appendChild(document.createElement('br'));
+            });
+        }
+
+        tableSelect.addEventListener('change', updateVariables);
+        window.onload = updateVariables;
+    </script>
+</body>
+</html>
