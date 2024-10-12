@@ -1,41 +1,11 @@
 'use client';
-
+import { DataItem } from '../../interfaces/interfaces';
+import { useViewData } from '../../hooks/useViewData';
 import { useState, useEffect } from 'react';
 
-interface DataItem {
-  id: number;
-  date: string;
-  value: number;
-  realtime_start?: string;
-  realtime_end?: string;
-}
-
-// This function requests the view_series route in the backend which is currently hardcoded to accept 'gdp' as input
-export default function ViewData() {
-  const [data, setData] = useState<DataItem[]>([]);
-  const [tableName, setTableName] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('http://127.0.0.1:5000/view_series')
-      .then((response) => response.json())
-      .then((fetchedData) => {
-        const tableNames = Object.keys(fetchedData);
-        if (tableNames.length > 0) {
-          const tableName = tableNames[0];
-          setTableName(tableName); 
-        const tableData = fetchedData[tableName];
-        setData(tableData);
-        } else {
-          console.error('No table data found in the response.');
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching data', error);
-        setLoading(false);
-      });
-  }, []);
+export default function dataTable() {
+  // const [tableNamee] = 
+  const { data, tableName, loading } = useViewData();
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading...</p>;
@@ -82,3 +52,12 @@ export default function ViewData() {
     </div>
   );
 }
+
+// This function requests the view_series route in the backend which is currently hardcoded to accept 'gdp' as input
+// export default function ViewData() {
+  // const [data, setData] = useState<DataItem[]>([]);
+  // const [tableName, setTableName] = useState<string>('');
+  // const [loading, setLoading] = useState(true);
+
+  
+// }

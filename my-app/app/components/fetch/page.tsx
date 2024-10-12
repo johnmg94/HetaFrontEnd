@@ -1,4 +1,5 @@
 'use client';
+import { useViewData } from '../../hooks/useViewData';
 
 import { useState, useEffect } from 'react';
 
@@ -33,7 +34,7 @@ export default function Search() {
     console.log('paramString: ', paramString);
     console.log('Search query:', query);
 
-    const url = `http://127.0.0.1:5000/fetch_data?query=${paramString}`;
+    const url = `http://127.0.0.1:5000/search_data?query=${paramString}`;
     fetch(url, {
       method: 'GET', // Change to 'POST' if needed
       headers: {
@@ -63,6 +64,15 @@ export default function Search() {
       });
   };
 
+  const handleClick = () => {
+    const { data, tableName, loading } = useViewData();
+  }
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Loading...</p>;
+  }
+  // }
+
   // Optionally remove this if you don't want automatic searches on input change
   // useEffect(() => {
   //   if (searchQuery) {
@@ -80,7 +90,7 @@ export default function Search() {
       >
         <label className="block">
           <span className="block text-sm font-medium text-slate-700">Search</span>
-          <input
+          <input 
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -99,11 +109,12 @@ export default function Search() {
 
           <div className="overflow-y-auto max-h-96">
             {data.map((item, index) => (
-              <div
+              <div 
+                onClick = { handleClick() }
                 key={item.id}
                 className={`p-4 mb-4 border rounded-md ${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
-                }`}
+                }` }
               >
                 <a
                   href={`/details/${item.id}`}
