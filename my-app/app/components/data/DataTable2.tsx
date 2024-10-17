@@ -3,7 +3,7 @@ import { DataItem } from '../../interfaces/interfaces';
 import { useViewData } from '../../hooks/useViewData';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-export default function DataTable3() {
+export default function DataTable2() {
 
   const router = useRouter();
   const [data, setData] = useState<DataItem[]>([]);
@@ -23,7 +23,7 @@ export default function DataTable3() {
               console.log('paramString: ', paramString);
               console.log('Search query:', query);
 
-              fetch(`http://127.0.0.1:5000/query_db?series=${paramString}`)
+              fetch(`http://127.0.0.1:5000/view_series?query=${paramString}`)
 
               // I want error handling when network isn't active
               // .catch (error) => {

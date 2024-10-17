@@ -1,7 +1,9 @@
 'use client';
 import { useViewData } from '../../hooks/useViewData';
-
+import DataTable2 from '../data/DataTable2';
 import { useState, useEffect } from 'react';
+import { DataItem } from '../../interfaces/interfaces';
+import { useRouter } from 'next/router';
 
 interface DataInfo {
   frequency: string;
@@ -23,6 +25,8 @@ interface DataInfo {
 }
 
 export default function Search() {
+  //new addition of router
+  // const router = useRouter();
   const [data, setData] = useState<DataInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [tableName, setTableName] = useState<string>('');
@@ -63,9 +67,18 @@ export default function Search() {
         setData([]);
       });
   };
+  //end handleSearch
 
-  const handleClick = () => {
-    const { data, tableName, loading } = useViewData();
+  const handleClick = async (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
+    // const { data, tableName, loading, query } = useViewData();
+    <DataTable2 />
+    const fetchedData = await fetch(`api/series_info/${id}`).then((res) => res.json());
+    router.push({
+      pathname: `/series_info/${id}`,
+      query: { data: JSON.stringify(fetchedData) }
+  });
+    // Will this result in two tables??
+   
   }
 
   if (loading) {
@@ -82,6 +95,7 @@ export default function Search() {
 
   return (
     <div>
+      {/* Search Box */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -100,7 +114,7 @@ export default function Search() {
           />
         </label>
       </form>
-
+      {/*  */ }
       {loading ? (
         <p className="text-center text-gray-500">Loading...</p>
       ) : (
@@ -110,14 +124,16 @@ export default function Search() {
           <div className="overflow-y-auto max-h-96">
             {data.map((item, index) => (
               <div 
-                onClick = { handleClick() }
                 key={item.id}
                 className={`p-4 mb-4 border rounded-md ${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
                 }` }
               >
-                <a
-                  href={`/details/${item.id}`}
+                {/* When clicking search result */}
+                {/* handleSearch should populate the data table */}
+                <a onClick = {(event) => {handleClick(item.id, event)
+                  event.preventDefault();}}
+                  href={`/series_info/${item.id}`}
                   className="text-lg font-bold text-blue-600 hover:underline"
                 >
                   {item.title}
