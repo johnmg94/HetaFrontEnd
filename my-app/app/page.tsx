@@ -2,7 +2,7 @@ import Image from "next/image";
 import ViewData from "./components/data/DataTable2";
 import Search from "./components/fetch/page"
 import Test from "./Test"
-import DataTable3 from "./components/data/page"
+// import DataTable3 from "./components/data/page"
 // my-app\app\components\data\ViewData.tsx
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <Search />
         {/* <ViewData /> */}
-        < DataTable3 />
+        {/* < DataTable3 /> */}
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
 

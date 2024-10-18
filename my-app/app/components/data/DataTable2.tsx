@@ -1,29 +1,29 @@
 'use client';
 import { DataItem } from '../../interfaces/interfaces';
-import { useViewData } from '../../hooks/useViewData';
+// import { useViewData } from '../../hooks/useViewData';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-export default function DataTable2() {
+// import { useRouter } from 'next/router';
 
-  const router = useRouter();
-  const [data, setData] = useState<DataItem[]>([]);
+export default function DataTable2 = ({data}: {data: any}) => {
+
+  // const router = useRouter();
+  // const [data, setData] = useState<DataItem[]>([]);
   const [tableName, setTableName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState<string>('');
 
-      useEffect(() => {
-
-          const fetchData = () => {
+      // useEffect(() => {
+          // const fetchData = () => {
             // if (!query) return;
             // if (router.query.data) {
             //   setData(JSON.parse(router.query.data));
             // }
-              setLoading(true);
-              const paramString = encodeURIComponent(query);
-              console.log('paramString: ', paramString);
-              console.log('Search query:', query);
+              // setLoading(true);
+              // const paramString = encodeURIComponent(query);
+              // console.log('paramString: ', paramString);
+              // console.log('Search query:', query);
 
-              fetch(`http://127.0.0.1:5000/view_series?query=${paramString}`)
+              // fetch(`http://127.0.0.1:5000/view_series?query=${paramString}`)
 
               // I want error handling when network isn't active
               // .catch (error) => {
@@ -31,41 +31,41 @@ export default function DataTable2() {
 
               // };
 
-              .then((response) => response.json())
+              // .then((response) => response.json())
 
               /* Gets table names */
-              .then((fetchedData) => {
-                const tableNames = Object.keys(fetchedData);
-                if (tableNames.length > 0) {
-                  const tableName = tableNames[0];
-                  setTableName(tableName); 
+              // .then((fetchedData) => {
+              //   const tableNames = Object.keys(fetchedData);
+              //   if (tableNames.length > 0) {
+              //     const tableName = tableNames[0];
+              //     setTableName(tableName); 
 
-                /* Gets table data */
-                const tableData = fetchedData[tableName];
-                setData(tableData);
-                } else {
-                  console.error('No table data found in the response.');
-                }
-                setLoading(false);
-              })
+              //   /* Gets table data */
+              //   const tableData = fetchedData[tableName];
+              //   setData(tableData);
+              //   } else {
+              //     console.error('No table data found in the response.');
+              //   }
+              //   setLoading(false);
+              // })
               
               /* Error Handling */
-              .catch((error) => {
-                console.error('Error fetching data', error);
-                setLoading(false);
-            });
-        }
-        fetchData();
-      }, [tableName]);
+      //         .catch((error) => {
+      //           console.error('Error fetching data', error);
+      //           setLoading(false);
+      //       });
+      //   }
+      //   fetchData();
+      // }, [tableName]);
       
 
 
   // const [tableNamee] = 
   
 
-  if (loading) {
-    return <p className="text-center text-gray-500">Loading...</p>;
-  }
+  // if (loading) {
+  //   return <p className="text-center text-gray-500">Loading...</p>;
+  // }
 
   return (
     // {

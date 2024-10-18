@@ -3,7 +3,7 @@ import { useViewData } from '../../hooks/useViewData';
 import DataTable2 from '../data/DataTable2';
 import { useState, useEffect } from 'react';
 import { DataItem } from '../../interfaces/interfaces';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 
 interface DataInfo {
   frequency: string;
@@ -71,15 +71,23 @@ export default function Search() {
 
   const handleClick = async (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
     // const { data, tableName, loading, query } = useViewData();
-    <DataTable2 />
-    const fetchedData = await fetch(`api/series_info/${id}`).then((res) => res.json());
-    router.push({
-      pathname: `/series_info/${id}`,
-      query: { data: JSON.stringify(fetchedData) }
-  });
+    try {
+      const fetchedData = await fetch(`http://127.0.0.1:5000/view_series/${id}`).then((res) => res.json());
+      setData(fetchedData) 
+    } catch (error) {
+      console.error("Error fetching data:", error)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //   router.push({
+  //     pathname: `/series_info/${id}`,
+  //     query: { data: JSON.stringify(fetchedData) }
+  // });
     // Will this result in two tables??
    
-  }
+  // }
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading...</p>;
@@ -131,15 +139,21 @@ export default function Search() {
               >
                 {/* When clicking search result */}
                 {/* handleSearch should populate the data table */}
-                <a onClick = {(event) => {handleClick(item.id, event)
+                <a 
+                  href= '#'
+                  onClick = {(event) => {handleClick(item.id, event) 
                   event.preventDefault();}}
-                  href={`/series_info/${item.id}`}
                   className="text-lg font-bold text-blue-600 hover:underline"
                 >
                   {item.title}
                 </a>
                 <p className="text-sm text-gray-700">{item.notes}</p>
                 <p className="text-sm text-gray-500">Frequency: {item.frequency}</p>
+                {loading ? (
+                  <p>Loading...</p>
+                ) : (
+                  data && <DataTable2 />
+                )}
               </div>
             ))}
           </div>
