@@ -28,9 +28,12 @@ export default function Search() {
   //new addition of router
   // const router = useRouter();
   const [data, setData] = useState<DataInfo[]>([]);
+  const [dataitem, setDataItem] = useState<DataItem[]>([]);
+  const [dataItemLoading, setDataItemLoading] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [tableName, setTableName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+ 
 
   const handleSearch = (query: string) => {
     setLoading(true);
@@ -48,12 +51,14 @@ export default function Search() {
     })
       .then((response) => response.json())
       .then((fetchedData) => {
+        // This function is bringing in table names that I don't want/need
         const tableNames = Object.keys(fetchedData);
         console.log(tableNames)
         if (tableNames.length > 0) {
           const tableName = tableNames[0];
           setTableName(tableName);
           const tableData = fetchedData["seriess"];
+          console.log(tableData)
           setData(tableData);
         } else {
           console.error('No table data found in the response.');
@@ -69,29 +74,63 @@ export default function Search() {
   };
   //end handleSearch
 
-  const handleClick = async (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
     // const { data, tableName, loading, query } = useViewData();
     try {
-      const fetchedData = await fetch(`http://127.0.0.1:5000/view_series/${id}`).then((res) => res.json());
-      setData(fetchedData) 
+      const url = `http://127.0.0.1:5000/view_series?series=${id}`;
+      fetch(url, {
+        method: 'GET', // Change to 'POST' if needed
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // body: JSON.stringify({ query }), // Uncomment if using POST and sending data in the body
+      })
+      .then((response) => response.json())
+      .then((fetchedData) => {
+        const dataItem = fetchedData
+        setDataItem(dataItem)
+        console.log(dataItem)
+        // const tableNames = Object.keys(fetchedData);
+        // console.log(tableNames)
+        // if (tableNames.length > 0) {
+          // const tableName = tableNames[0];
+          // setTableName(tableName);
+          // const tableData = fetchedData["seriess"];
+          // setData(tableData);
+      //   } else {
+      //     console.error('No table data found in the response.');
+      //     setData([]);
+      //   }
+      //   setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching data', error);
+        setLoading(false);
+        setData([]);
+      });
+
+      // const fetchedData = await response.json();
+      // const dataItem: DataItem[] = fetchedData["observations"]
+
+      // setDataItem(dataItem)
+      // dataItem = fetchedData["observations"]
+      // setDataItem(fetchedData["observations"]) 
     } catch (error) {
       console.error("Error fetching data:", error)
     } finally {
       setLoading(false);
     }
-  };
 
-  //   router.push({
-  //     pathname: `/series_info/${id}`,
-  //     query: { data: JSON.stringify(fetchedData) }
-  // });
-    // Will this result in two tables??
-   
-  // }
+}
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading...</p>;
   }
+
+  if (dataItemLoading) {
+    return <p className="text-center text-gray-500">Data Is Loading...</p>;
+  }
+
   // }
 
   // Optionally remove this if you don't want automatic searches on input change
@@ -141,77 +180,75 @@ export default function Search() {
                 {/* handleSearch should populate the data table */}
                 <a 
                   href= '#'
-                  onClick = {(event) => {handleClick(item.id, event) 
-                  event.preventDefault();}}
+                  onClick = {(event) => {event.preventDefault() 
+                    handleClick(item.id, event) 
+                  ;}}
                   className="text-lg font-bold text-blue-600 hover:underline"
                 >
                   {item.title}
                 </a>
                 <p className="text-sm text-gray-700">{item.notes}</p>
                 <p className="text-sm text-gray-500">Frequency: {item.frequency}</p>
-                {loading ? (
+                {/* {loading ? (
                   <p>Loading...</p>
                 ) : (
-                  data && <DataTable2 />
-                )}
+                  data.length > 0 && <DataTable2 data={dataitem}/>
+                )} */}
               </div>
             ))}
           </div>
         </div>
       )}
-    </div>
+
+    {dataItemLoading ? (  <p className="text-center text-gray-500">Data Is Loading...</p>
+    ) : (
+        <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-6">Data Table</h1>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                  ID
+                </th>
+                <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                  Date
+                </th>
+                <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataitem.length > 0 ? (
+                dataitem.map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                  >
+                    <td className="border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                      {item.id}
+                    </td>
+                    <td className="border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                      {item.date}
+                    </td>
+                    <td className="border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                      {item.value}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="text-center text-gray-500">
+                    No data available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+  </div>
   );
 }
-
-
-
-// This function requests the view_series route in the backend which is currently hardcoded to accept 'gdp' as input
-
-
-  //   const url = `http://127.0.0.1:5000/fetch_data?query=${paramString}`;
-  //     fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     })
-  //     .then(response => {
-  //       // Error handling if response is malformed
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  //       return response.json();
-  //     })
-      
-  //     .then((data) => {
-  //       const tableNames = data.map((obj: DataInfo) => Object.keys(obj)).flat();
-  //       console.log("Table Names:", tableNames)
-
-  //       if (tableNames.length > 0) {
-  //         const tableName = tableNames[0];
-  //         console.log("table name: ", tableName)
-  //         setTableName(tableName);
-
-  //       //Might want to handle cases where data[tableName] is undefined or malformed to avoid any potential runtime errors.
-  //       const tableData = data.map((obj: DataInfo) => Object.entries(obj).flat());
-  //       if (Array.isArray(tableData) && tableData.length > 0) {
-  //         setData(tableData);
-  //       } else {
-  //         console.error('Table  data is empty or not an array');
-  //         setData([]);
-  //       }
-  //      } else {
-  //         console.error('No table data found in the response');
-  //         setData([]);
-  //       }
-  //     })
-
-  //     .catch((error) => {
-  //       console.error('Error fetching data', error);
-  //       setLoading(false);
-  //     })
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  //     console.log("DATA: ", data)
-  // };

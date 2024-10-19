@@ -2,11 +2,6 @@ import Image from "next/image";
 import ViewData from "./components/data/DataTable2";
 import Search from "./components/fetch/page"
 import Test from "./Test"
-<<<<<<< HEAD
-// import DataTable3 from "./components/data/page"
-=======
-// import DataTable3 from "./components/data/page_null"
->>>>>>> 5d8b3fe1e20ca8eec5d8acef84f7a14f1bb8c521
 // my-app\app\components\data\ViewData.tsx
 
 export default function Home() {

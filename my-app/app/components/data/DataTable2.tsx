@@ -4,82 +4,33 @@ import { DataItem } from '../../interfaces/interfaces';
 import { useState, useEffect } from 'react';
 // import { useRouter } from 'next/router';
 
-export default function DataTable2 = ({data}: {data: any}) => {
+interface DataTable2Props {
+  data: DataItem[];
+}
 
+const DataTable2: React.FC<DataTable2Props> = ({ data }) => {
+  console.log('Data received in DataTable2', data);
+
+  if (data.length === 0) {
+    return <p className="text-center text-gray-500"> No data to display</p>;
+  }
   // const router = useRouter();
-  // const [data, setData] = useState<DataItem[]>([]);
-  const [tableName, setTableName] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState<string>('');
+  // const [dataitem, setDataItem] = useState<DataItem[]>([]);
+  // const [tableName, setTableName] = useState<string>('');
+  // const [loading, setLoading] = useState(true);
+  // const [query, setQuery] = useState<string>('');
 
-      // useEffect(() => {
-          // const fetchData = () => {
-            // if (!query) return;
-            // if (router.query.data) {
-            //   setData(JSON.parse(router.query.data));
-            // }
-              // setLoading(true);
-              // const paramString = encodeURIComponent(query);
-              // console.log('paramString: ', paramString);
-              // console.log('Search query:', query);
-
-              // fetch(`http://127.0.0.1:5000/view_series?query=${paramString}`)
-
-              // I want error handling when network isn't active
-              // .catch (error) => {
-                // console.error('Error fetching data,' error);
-
-              // };
-
-              // .then((response) => response.json())
-
-              /* Gets table names */
-              // .then((fetchedData) => {
-              //   const tableNames = Object.keys(fetchedData);
-              //   if (tableNames.length > 0) {
-              //     const tableName = tableNames[0];
-              //     setTableName(tableName); 
-
-              //   /* Gets table data */
-              //   const tableData = fetchedData[tableName];
-              //   setData(tableData);
-              //   } else {
-              //     console.error('No table data found in the response.');
-              //   }
-              //   setLoading(false);
-              // })
-              
-              /* Error Handling */
-      //         .catch((error) => {
-      //           console.error('Error fetching data', error);
-      //           setLoading(false);
-      //       });
-      //   }
-      //   fetchData();
-      // }, [tableName]);
-      
-
-
-  // const [tableNamee] = 
-  
-
-  // if (loading) {
-  //   return <p className="text-center text-gray-500">Loading...</p>;
-  // }
+  // useEffect(() => {
+  //   if (data.length >0) {
+  //     setDataItem(data);
+  //     setLoading(false);
+  //   }
+  // }, [data]);
 
   return (
-    // {
-    //   data,
-    //   setData,
-    //   tableName,
-    //   setTableName,
-    //   loading,
-    //   setLoading,
-    //   query,
-    //   setQuery}
   
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">{tableName || "Data Table"}</h1>
+      <h1 className="text-2xl font-bold mb-6">Data Table</h1>
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse border border-gray-200">
           <thead>
@@ -119,11 +70,4 @@ export default function DataTable2 = ({data}: {data: any}) => {
     );
   }
 
-// This function requests the view_series route in the backend which is currently hardcoded to accept 'gdp' as input
-// export default function ViewData() {
-  // const [data, setData] = useState<DataItem[]>([]);
-  // const [tableName, setTableName] = useState<string>('');
-  // const [loading, setLoading] = useState(true);
-
-  
-// }
+  export default DataTable2;
