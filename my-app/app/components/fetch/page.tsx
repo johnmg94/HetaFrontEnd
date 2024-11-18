@@ -29,6 +29,7 @@ export default function Search() {
   // const router = useRouter();
   const [data, setData] = useState<DataInfo[]>([]);
   const [dataitem, setDataItem] = useState<DataItem[]>([]);
+  const [selectItems, setSelectedItems] = useState<string[]>([]);
   const [dataItemLoading, setDataItemLoading] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [tableName, setTableName] = useState<string>('');
@@ -75,70 +76,65 @@ export default function Search() {
   //end handleSearch
 
   const handleClick = (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
-    // const { data, tableName, loading, query } = useViewData();
     try {
       const url = `http://127.0.0.1:5000/view_series?series=${id}`;
       fetch(url, {
-        method: 'GET', // Change to 'POST' if needed
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        // body: JSON.stringify({ query }), // Uncomment if using POST and sending data in the body
       })
       .then((response) => response.json())
       .then((fetchedData) => {
         const dataItem = fetchedData
         setDataItem(dataItem)
         console.log(dataItem)
-        // const tableNames = Object.keys(fetchedData);
-        // console.log(tableNames)
-        // if (tableNames.length > 0) {
-          // const tableName = tableNames[0];
-          // setTableName(tableName);
-          // const tableData = fetchedData["seriess"];
-          // setData(tableData);
-      //   } else {
-      //     console.error('No table data found in the response.');
-      //     setData([]);
-      //   }
-      //   setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching data', error);
         setLoading(false);
         setData([]);
       });
-
-      // const fetchedData = await response.json();
-      // const dataItem: DataItem[] = fetchedData["observations"]
-
-      // setDataItem(dataItem)
-      // dataItem = fetchedData["observations"]
-      // setDataItem(fetchedData["observations"]) 
     } catch (error) {
       console.error("Error fetching data:", error)
     } finally {
       setLoading(false);
     }
-
 }
-
   if (loading) {
     return <p className="text-center text-gray-500">Loading...</p>;
   }
-
   if (dataItemLoading) {
     return <p className="text-center text-gray-500">Data Is Loading...</p>;
   }
 
-  // }
+  const handleSelect = (itemId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setSelectedItems((prevSelected) => [...prevSelected, itemId]);
+    } else {
+      setSelectedItems((prevSelected) => 
+      prevSelected.filter((id) => id !== itemId)
+    );
+  }
+};
 
-  // Optionally remove this if you don't want automatic searches on input change
-  // useEffect(() => {
-  //   if (searchQuery) {
-  //     handleSearch(searchQuery);
-  //   }
-  // }, [searchQuery]);
+  const handleSelectSubmit = async () => {
+    try {
+      const response = await fetch('/api/my-endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'applicaation/json',
+          body: JSON.stringify({ itemIDs: selectItems })
+        }});
+        if (response.ok) {
+          console.log('Items submitted successfully');
+        } else {
+          console.error("Submission failed");
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    };
 
   return (
     <div>
@@ -165,17 +161,26 @@ export default function Search() {
       {loading ? (
         <p className="text-center text-gray-500">Loading...</p>
       ) : (
-        <div className="container mx-auto px-4 py-8">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleSelectSubmit();
+          }}
+        className="w-full container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold mb-6">{tableName}</h1>
-
           <div className="overflow-y-auto max-h-96">
             {data.map((item, index) => (
-              <div 
+              <div
                 key={item.id}
                 className={`p-4 mb-4 border rounded-md ${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
                 }` }
-              >
+              > <input 
+                type="checkbox"
+                id={item.id}
+                onChange={(event) => handleSelect(item.id, event)}
+                checked={selectItems.includes(item.id)}
+                className="mr-2" 
+                />
                 {/* When clicking search result */}
                 {/* handleSearch should populate the data table */}
                 <a 
@@ -183,12 +188,12 @@ export default function Search() {
                   onClick = {(event) => {event.preventDefault() 
                     handleClick(item.id, event) 
                   ;}}
-                  className="text-lg font-bold text-blue-600 hover:underline"
+                  className="p-4 text-lg font-bold text-blue-600 hover:underline"
                 >
                   {item.title}
                 </a>
-                <p className="text-sm text-gray-700">{item.notes}</p>
-                <p className="text-sm text-gray-500">Frequency: {item.frequency}</p>
+                <p className="p-4 text-sm text-gray-700">{item.notes}</p>
+                <p className="p-4 text-sm text-gray-500">Frequency: {item.frequency}</p>
                 {/* {loading ? (
                   <p>Loading...</p>
                 ) : (
@@ -196,13 +201,17 @@ export default function Search() {
                 )} */}
               </div>
             ))}
+          <button>
+            Create Model
+          </button>
           </div>
-        </div>
+        </form>
+
       )}
 
     {dataItemLoading ? (  <p className="text-center text-gray-500">Data Is Loading...</p>
     ) : (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Data Table</h1>
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse border border-gray-200">
@@ -248,7 +257,11 @@ export default function Search() {
           </table>
         </div>
       </div>
+
     )}
+    <div className="container "> 
+        
+    </div>
   </div>
   );
 }
